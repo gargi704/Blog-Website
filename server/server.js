@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 8000;
 const MONGO_URI = process.env.MONGODB_URL;
 
 app.use(cors({
-  origin: "blog-website-sooty.vercel.app",
+  origin: "https://blog-website-sooty.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
