@@ -20,7 +20,8 @@ export const uploadImage = async (req, res) => {
     uploadStream.end(req.file.buffer);
 
     uploadStream.on("finish", () => {
-      const imageUrl = `${process.env.BASE_URL || "http://localhost:8000"}/file/${uploadStream.id}`;
+      const backendURL = process.env.BACKEND_API_URL || "http://localhost:8080";
+      const imageUrl = `${backendURL}/file/${uploadStream.id.toString()}`;
       return res.status(200).json({ url: imageUrl });
     });
 

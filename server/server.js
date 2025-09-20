@@ -8,11 +8,14 @@ import router from "./routes/route.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = 8080 || process.env.PORT;
 const MONGO_URI = process.env.MONGODB_URL;
 
 app.use(cors({
-  origin: "https://blog-website-sooty.vercel.app",
+    origin: [
+    "http://localhost:3000", 
+    "https://blog-website-sooty.vercel.app"   
+  ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
@@ -26,7 +29,7 @@ if(process.env.NODE_ENV === 'production') {
 
 mongoose.connect(MONGO_URI)
   .then(() => {
-    gridfsBucket = new GridFSBucket(mongoose.connection.db, { bucketName: "uploads" });
+    gridfsBucket = new GridFSBucket(mongoose.connection.db, { bucketName: "photos" });
     console.log("Database connected successfully");
     console.log("GridFSBucket initialized");
 
