@@ -30,8 +30,8 @@ if(process.env.NODE_ENV === 'production') {
 mongoose.connect(MONGO_URI)
   .then(() => {
     gridfsBucket = new GridFSBucket(mongoose.connection.db, { bucketName: "photos" });
-    console.log("Database connected successfully");
-    console.log("GridFSBucket initialized");
+    // console.log("Database connected successfully");
+    // console.log("GridFSBucket initialized");
 
     app.use("/", router);
 

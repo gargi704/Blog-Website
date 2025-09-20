@@ -2,12 +2,13 @@ import axios from 'axios';
 import { API_NOTIFICATION_MESSAGES, SERVICE_URLS } from '../constants/config';
 import { getAccessToken, getType } from '../utils/common-utill';
 
-const API_URL ="http://localhost:8080" || process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
     timeout: 50000,
-    headers: { "content-type": "application/json" }
+    headers: { "content-type": "application/json" },
+    withCredentials: true
 });
 
 // Request interceptor
@@ -19,12 +20,12 @@ axiosInstance.interceptors.request.use(
         if (config.TYPE?.params) {
             config.url = `${config.url}/${config.TYPE.params}`;
         } else if (config.TYPE?.query) {
-        config.url = `${config.url}?${config.TYPE.query}`;
-    }
+            config.url = `${config.url}?${config.TYPE.query}`;
+        }
 
-return config;
+        return config;
     },
-(error) => Promise.reject(error)
+    (error) => Promise.reject(error)
 );
 
 // Response interceptor
@@ -78,7 +79,7 @@ export const uploadFile = async (formData) => {
 // Get comments for a post
 export const getComments = async (postId) => {
     try {
-        return await API.getAllComments(null, postId); 
+        return await API.getAllComments(null, postId);
     } catch (error) {
         console.log("Error while calling getComments API", error);
         return { isError: true, msg: error.response?.data || error.message, code: error.response?.status };

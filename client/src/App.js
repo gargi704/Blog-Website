@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Box } from '@mui/material';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
-// components
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import DataProvider from './context/DataProvider';
 import Login from './component/account/login';
 import Home from './components/home';
@@ -29,6 +30,7 @@ function App() {
   return (
     <DataProvider>
       <BrowserRouter>
+       <ToastContainer position="top-center" autoClose={3000} />
         <Box style={{ marginTop: 64 }}>
           <Routes>
             <Route path='/account' element={<Login isUserAuthenticated={isUserAuthenticated} />} />

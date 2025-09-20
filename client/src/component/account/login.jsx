@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Box, TextField, Button, styled, Typography } from '@mui/material';
 import { API } from '../../service/api';
 import { DataContext } from '../../context/DataProvider';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 
 const Component = styled(Box)`
     width: 400px;
@@ -50,14 +52,6 @@ const Text = styled(Typography)`
     font-size: 12px;
 `;
 
-const Error = styled(Typography)`
-    font-size: 10px;
-    color: #ff6161;
-    line-height: 0;
-    margin-top: 10px;
-    font-weight: 600;
-`;
-
 const loginInitialValues = {
     username: '',
     password: ''
@@ -72,17 +66,12 @@ const signupInitialValues = {
 const Login = ({ isUserAuthenticated }) => {
     const [login, setLogin] = useState(loginInitialValues);
     const [signup, setSignup] = useState(signupInitialValues);
-    const [error, setError] = useState('');
     const [account, toggleAccount] = useState('login');
 
     const navigate = useNavigate();
     const { setAccount } = useContext(DataContext);
 
-    const imageURL = process.env.PUBLIC_URL + '/image/logo-blog.png';
-
-    useEffect(() => {
-        setError('');
-    }, [login, signup]);
+    const imageURL = process.env.PUBLIC_URL + '/Image/logo-blog.png';
 
     const onValueChange = (e) => {
         setLogin({ ...login, [e.target.name]: e.target.value });
@@ -92,7 +81,6 @@ const Login = ({ isUserAuthenticated }) => {
         setSignup({ ...signup, [e.target.name]: e.target.value });
     }
 
-    // inside Login component
     const loginUser = async () => {
         try {
             let response = await API.userLogin({
@@ -106,12 +94,14 @@ const Login = ({ isUserAuthenticated }) => {
 
                 isUserAuthenticated(true);
                 setAccount({ name: response.data.name, username: response.data.username });
+                toast.success("Login successful!");
                 navigate('/');
+
             } else {
-                setError(response.msg || "Something went wrong");   
+                toast.error(response.msg || "Something went wrong");
             }
         } catch (err) {
-            setError("Something went wrong");   
+            toast.error("Something went wrong!");
         }
     };
 
@@ -119,45 +109,43 @@ const Login = ({ isUserAuthenticated }) => {
         try {
             let response = await API.userSignup(signup);
             if (response.isSuccess) {
-                setError('');
                 setSignup(signupInitialValues);
                 toggleAccount('login');
+                toast.success("Account created successfully!");
             } else {
-                setError(response.msg?.message || 'Signup failed! Try again.');
+                toast.error(response.msg?.message || "Signup failed! Try again.");
             }
         } catch (err) {
             console.error("Signup Failed:", err);
-            setError("Something went wrong!");
+            toast.error("Something went wrong!");
         }
     }
 
     const toggleSignup = () => {
-        account === 'signup' ? toggleAccount('login') : toggleAccount('signup');
+        toggleAccount(account === 'signup' ? 'login' : 'signup');
     }
 
     return (
         <Component>
             <Box>
                 <Image src={imageURL} alt="blog" />
-                {
-                    account === 'login' ?
-                        <Wrapper>
-                            <TextField variant="standard" value={login.username} onChange={onValueChange} name='username' label='Enter Username' />
-                            <TextField variant="standard" value={login.password} onChange={onValueChange} name='password' label='Enter Password' type="password" />
-                            {error && <Error>{error}</Error>}
-                            <LoginButton variant="contained" onClick={loginUser}>Login</LoginButton>
-                            <Text style={{ textAlign: 'center' }}>OR</Text>
-                            <SignupButton onClick={toggleSignup} style={{ marginBottom: 50 }}>Create an account</SignupButton>
-                        </Wrapper> :
-                        <Wrapper>
-                            <TextField variant="standard" value={signup.name} onChange={onInputChange} name='name' label='Enter Name' />
-                            <TextField variant="standard" value={signup.username} onChange={onInputChange} name='username' label='Enter Username' />
-                            <TextField variant="standard" value={signup.password} onChange={onInputChange} name='password' label='Enter Password' type="password" />
-                            {error && <Error>{error}</Error>}
-                            <SignupButton onClick={signupUser}>Signup</SignupButton>
-                            <Text style={{ textAlign: 'center' }}>OR</Text>
-                            <LoginButton variant="contained" onClick={toggleSignup}>Already have an account</LoginButton>
-                        </Wrapper>
+                {account === 'login' ?
+                    <Wrapper>
+                        <TextField variant="standard" value={login.username} onChange={onValueChange} name='username' label='Enter Username' />
+                        <TextField variant="standard" value={login.password} onChange={onValueChange} name='password' label='Enter Password' type="password" />
+                        <LoginButton variant="contained" onClick={loginUser}>Login</LoginButton>
+                        <Text style={{ textAlign: 'center' }}>OR</Text>
+                        <SignupButton onClick={toggleSignup} style={{ marginBottom: 50 }}>Create an account</SignupButton>
+                    </Wrapper>
+                    :
+                    <Wrapper>
+                        <TextField variant="standard" value={signup.name} onChange={onInputChange} name='name' label='Enter Name' />
+                        <TextField variant="standard" value={signup.username} onChange={onInputChange} name='username' label='Enter Username' />
+                        <TextField variant="standard" value={signup.password} onChange={onInputChange} name='password' label='Enter Password' type="password" />
+                        <SignupButton onClick={signupUser}>Signup</SignupButton>
+                        <Text style={{ textAlign: 'center' }}>OR</Text>
+                        <LoginButton variant="contained" onClick={toggleSignup}>Already have an account</LoginButton>
+                    </Wrapper>
                 }
             </Box>
         </Component>
